@@ -15,7 +15,7 @@ import (
 // convertDetectMorse detects whether s is Morse code or text and
 // converts it to the opposite representation. It returns an error if
 // the input contains invalid symbols or cannot be converted.
-func CsonvertDetectMorse(s string) (string, error) {
+func ConvertDetectMorse(s string) (string, error) {
 
 	if s == "" {
 		return "", fmt.Errorf(сon.ErrEmptyMorseString, сon.ErrEmptyInput)
