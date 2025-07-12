@@ -1,3 +1,6 @@
+// Package main is the entry point for the Morse code conversion service.
+// It initializes the logger, creates and starts the HTTP server,
+// and manages the application lifecycle.
 package main
 
 import (

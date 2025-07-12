@@ -1,0 +1,29 @@
+# Логи сервера
+*.log
+morseServer.log
+
+# Файлы результатов конвертации
+conversion_result_*
+conversion result*
+
+# Временные файлы
+*.tmp
+*.temp
+
+# Файлы тестов
+internal/server/server_test.go
+internal/handlers/handlers_test.go
+
+# Бинарные файлы
+*.exe
+*.bin
+
+# Файлы IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db

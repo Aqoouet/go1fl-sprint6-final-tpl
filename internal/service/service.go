@@ -12,9 +12,9 @@ import (
 	сon "github.com/Yandex-Practicum/go1fl-sprint6-final/internal/constData"
 )
 
-// convertDetectMorse detects whether s is Morse code or text and
-// converts it to the opposite representation. It returns an error if
-// the input contains invalid symbols or cannot be converted.
+// ConvertDetectMorse automatically detects whether input is Morse code or text
+// and converts it to the opposite representation
+// Returns error if input contains invalid symbols or cannot be converted
 func ConvertDetectMorse(s string) (string, error) {
 
 	if s == "" {

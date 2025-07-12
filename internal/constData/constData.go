@@ -1,3 +1,6 @@
+// Package constData provides constants and configuration values for the application.
+// It includes error messages, server parameters, Morse code settings,
+// and other configuration constants used throughout the service.
 package constData
 
 import (
