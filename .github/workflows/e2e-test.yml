@@ -10,11 +10,16 @@ jobs:
 
   firstfloortest:
     runs-on: ubuntu-latest
-    container: golang:1.24
+    container: golang:1.24.0
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Setup Go environment
+        run: |
+          go mod download
+          go mod tidy
 
       - name: Download autotests binaries
         uses: robinraju/release-downloader@v1.8
@@ -34,6 +39,7 @@ jobs:
         run: |
           cd cmd/
           go build -buildvcs=false -o server
+          chmod +x server
 
       - name: Run test
         run: |

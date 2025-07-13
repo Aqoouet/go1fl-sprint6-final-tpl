@@ -7,8 +7,14 @@ import (
 	"io"
 	"log"
 	"os"
+)
 
-	con "github.com/Yandex-Practicum/go1fl-sprint6-final/internal/constData"
+// ----- Log parameters -----
+var (
+	LogFileName   = "morseServer.log"
+	LogPrefix     = "LOG: "
+	ErrLogCreate  = "not possible to create log file"
+	ErrFileCreate = "file creation error"
 )
 
 // Lg stores reference to the global logger
@@ -28,13 +34,13 @@ func SetLogger(l *log.Logger) {
 // Log file is created with append mode and 0666 permissions
 func CreateLogger() (*log.Logger, *os.File) {
 
-	file, err := os.OpenFile(con.LogFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LogFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("%v: %v", con.ErrLogCreate, con.ErrFileCreate)
+		log.Fatalf("%v: %v", ErrLogCreate, ErrFileCreate)
 	}
 
 	multiWriter := io.MultiWriter(os.Stdout, file)
-	logger := log.New(multiWriter, con.LogPrefix, log.Ldate|log.Ltime)
+	logger := log.New(multiWriter, LogPrefix, log.Ldate|log.Ltime)
 
 	return logger, file
 }

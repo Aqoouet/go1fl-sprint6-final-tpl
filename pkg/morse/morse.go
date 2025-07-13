@@ -349,3 +349,30 @@ func WithWordSeparator(wordSeparator string) ConverterOption {
 		return c
 	}
 }
+
+// ----- Morse code parameters -----
+// allowedCharactersText returns a string containing all runes considered
+// valid for text input (Cyrillic letters, digits and punctuation
+// supported by pkg/morse).
+func allowedCharactersText() string {
+
+	// adding symbols compatible with morse.go
+	var ch = []rune{'"', '\'', '(', ')', ',', '-', '.', '/', ':', '?', ' '}
+
+	// adding symbols from Russian alphabet
+	for i := 1040; i <= 1103; i++ {
+		ch = append(ch, rune(i))
+	}
+
+	// adding digits
+	for i := 48; i <= 57; i++ {
+		ch = append(ch, rune(i))
+	}
+
+	return string(ch)
+}
+
+var (
+	AllwText  = allowedCharactersText()
+	AllwMorse = ".- "
+)

@@ -12,8 +12,20 @@ import (
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/handlers"
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/logger"
 	"github.com/go-chi/chi/v5"
+)
 
-	con "github.com/Yandex-Practicum/go1fl-sprint6-final/internal/constData"
+// ----- Server parameters -----
+const (
+	DefaultPort         = 8080
+	DefaultReadTimeout  = 5  // seconds
+	DefaultWriteTimeout = 10 // seconds
+	DefaultIdleTimeout  = 15 // seconds
+)
+
+// ----- Log parameters -----
+var (
+	LogSuccServCreation = fmt.Sprintf("server started! address: localhost:%d", DefaultPort)
+	ErrServCreation     = "error during server creation"
 )
 
 // morseServer represents the HTTP server with logger and server instance
@@ -42,11 +54,11 @@ func newRouter(appLog *log.Logger) http.Handler {
 func CreateRouter(l *log.Logger) *morseServer {
 
 	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", con.DefaultPort),
+		Addr:         fmt.Sprintf(":%d", DefaultPort),
 		Handler:      newRouter(l),
-		ReadTimeout:  con.DefaultReadTimeout * time.Second,
-		WriteTimeout: con.DefaultWriteTimeout * time.Second,
-		IdleTimeout:  con.DefaultIdleTimeout * time.Second,
+		ReadTimeout:  DefaultReadTimeout * time.Second,
+		WriteTimeout: DefaultWriteTimeout * time.Second,
+		IdleTimeout:  DefaultIdleTimeout * time.Second,
 		ErrorLog:     l,
 	}
 
@@ -55,11 +67,11 @@ func CreateRouter(l *log.Logger) *morseServer {
 	// useful in tests
 	go func() {
 
-		l.Println(con.LogSuccServCreation)
+		l.Println(LogSuccServCreation)
 
 		err := server.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
-			l.Printf("%v: %v", con.ErrServCreation, err.Error())
+			l.Printf("%v: %v", ErrServCreation, err.Error())
 		}
 
 	}()

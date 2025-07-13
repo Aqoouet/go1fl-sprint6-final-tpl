@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	сon "github.com/Yandex-Practicum/go1fl-sprint6-final/internal/constData"
 )
 
 func runConvertDetectMorseTest(input string, output string, hasError bool, typeError error, t *testing.T) {
@@ -48,14 +46,14 @@ var tests = []convertDetectMorseTestItem{
 		input:     "строка содержит символы % ! @",
 		output:    "",
 		hasError:  true,
-		typeError: сon.ErrConvString,
+		typeError: ErrConvString,
 	},
 	{
 		name:      "пустая строка",
 		input:     "",
 		output:    "",
 		hasError:  true,
-		typeError: сon.ErrEmptyInput,
+		typeError: ErrEmptyInput,
 	},
 	{
 		name:      "текст содержащий строчные буквы с цифрами",
@@ -76,7 +74,7 @@ var tests = []convertDetectMorseTestItem{
 		input:     ".-..----.-..----...--------.----..---",
 		output:    "",
 		hasError:  true,
-		typeError: сon.ErrConvString,
+		typeError: ErrConvString,
 	},
 	{
 		name:      "одна точка",
@@ -90,7 +88,7 @@ var tests = []convertDetectMorseTestItem{
 		input:     "Hello World",
 		output:    "",
 		hasError:  true,
-		typeError: сon.ErrConvString,
+		typeError: ErrConvString,
 	},
 }
 

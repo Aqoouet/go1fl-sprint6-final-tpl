@@ -13,5 +13,7 @@ func main() {
 	defer f.Close()
 	_ = server.CreateRouter(l)
 
+	// Keep the main goroutine alive to prevent the program from exiting
+	// The server runs in a separate goroutine, so we need to block the main thread
 	select {}
 }

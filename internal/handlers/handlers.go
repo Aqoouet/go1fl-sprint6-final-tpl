@@ -13,8 +13,20 @@ import (
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/logger"
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
+)
 
-	con "github.com/Yandex-Practicum/go1fl-sprint6-final/internal/constData"
+// ----- Handlers data ------
+var IndexHTML = "index.html"
+
+// ----- Error messages constant -----
+var (
+	ErrIndexHTMLMissing = "Missing 'index.html' in work directory"
+	ErrIndexHTMLParsing = "'index.html' is broken"
+	ErrFileNotFound     = "file not found"
+	ErrFileCreateMsg    = "file create error"
+	ErrBadFileContent   = "bad file content"
+	ErrFileWrite        = "file write error"
+	ErrConvStringMsg    = "unable to convert string"
 )
 
 // ----- Index html -----
@@ -23,9 +35,9 @@ import (
 // Returns the HTML content as bytes or terminates the program on error
 func indexHTMLParse() []byte {
 
-	indexBytes, err := os.ReadFile(con.IndexHTML)
+	indexBytes, err := os.ReadFile(IndexHTML)
 	if err != nil {
-		logger.Lg.Fatalf("%v: %v", con.ErrIndexHTMLParsing, err)
+		logger.Lg.Fatalf("%v: %v", ErrIndexHTMLParsing, err)
 	}
 
 	return indexBytes
@@ -45,7 +57,12 @@ func GetMain(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(getIndexBytes())
+	_, err := w.Write(getIndexBytes())
+	if err != nil {
+		logger.Lg.Printf("Error writing response: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 }
 
@@ -58,8 +75,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	// Parse multipart form data from the request
 	// This extracts the uploaded file from the HTML form
 	if err := r.ParseMultipartForm(0); err != nil {
-		logger.Lg.Printf("%v: %v\n", con.ErrIndexHTMLParsing, err)
-		http.Error(w, con.ErrIndexHTMLParsing, http.StatusBadRequest)
+		logger.Lg.Printf("%v: %v\n", ErrIndexHTMLParsing, err)
+		http.Error(w, ErrIndexHTMLParsing, http.StatusBadRequest)
 		return
 	}
 
@@ -77,8 +94,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 
 	// Check if file was found and successfully opened
 	if err != nil || fi == nil {
-		logger.Lg.Printf("%v: %v\n", con.ErrFileNotFound, err)
-		http.Error(w, con.ErrFileNotFound, http.StatusBadRequest)
+		logger.Lg.Printf("%v: %v\n", ErrFileNotFound, err)
+		http.Error(w, ErrFileNotFound, http.StatusBadRequest)
 		return
 	}
 
@@ -86,8 +103,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	fileData, err := io.ReadAll(fi)
 	fi.Close() // Always close the file to free resources
 	if err != nil {
-		http.Error(w, con.ErrBadFileContent, http.StatusBadRequest)
-		logger.Lg.Printf("%v: %v\n", con.ErrBadFileContent, err)
+		http.Error(w, ErrBadFileContent, http.StatusBadRequest)
+		logger.Lg.Printf("%v: %v\n", ErrBadFileContent, err)
 		return
 	}
 
@@ -96,8 +113,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	initial_string := string(fileData)
 	converted, err := service.ConvertDetectMorse(initial_string)
 	if err != nil {
-		http.Error(w, con.ErrConvStringMsg, http.StatusBadRequest)
-		logger.Lg.Printf("%v: %v\n", con.ErrConvStringMsg, err)
+		http.Error(w, ErrConvStringMsg, http.StatusBadRequest)
+		logger.Lg.Printf("%v: %v\n", ErrConvStringMsg, err)
 		return
 	}
 
@@ -108,8 +125,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	// Create the output file to save conversion results
 	d, err := os.Create(outputFileName)
 	if err != nil {
-		http.Error(w, con.ErrFileCreateMsg, http.StatusInternalServerError)
-		logger.Lg.Printf("%v: %v\n", con.ErrFileCreateMsg, err)
+		http.Error(w, ErrFileCreateMsg, http.StatusInternalServerError)
+		logger.Lg.Printf("%v: %v\n", ErrFileCreateMsg, err)
 		return
 	}
 	defer d.Close() // Ensure file is closed even if errors occur
@@ -117,8 +134,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	// Write the converted content to the output file
 	_, err = io.WriteString(d, converted)
 	if err != nil {
-		http.Error(w, con.ErrFileWrite, http.StatusInternalServerError)
-		logger.Lg.Printf("%v: %v\n", con.ErrFileWrite, err)
+		http.Error(w, ErrFileWrite, http.StatusInternalServerError)
+		logger.Lg.Printf("%v: %v\n", ErrFileWrite, err)
 		return
 	}
 
@@ -127,8 +144,19 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 
 	// Return detailed information about the conversion
 	// This includes both the original input and the converted output
-	fmt.Fprintf(w, "initial string %q was converted to %q\n", initial_string, converted)
-	fmt.Fprintf(w, "results of conversion were saved in file %q\n", outputFileName)
+	_, err = fmt.Fprintf(w, "initial string %q was converted to %q\n", initial_string, converted)
+	if err != nil {
+		logger.Lg.Printf("Error writing conversion details: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = fmt.Fprintf(w, "results of conversion were saved in file %q\n", outputFileName)
+	if err != nil {
+		logger.Lg.Printf("Error writing file info: %v", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	// Log successful conversion for debugging/monitoring
 	logger.Lg.Printf("uploaded file converted -> %s", outputFileName)
