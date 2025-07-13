@@ -113,7 +113,7 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 	initial_string := string(fileData)
 	converted, err := service.ConvertDetectMorse(initial_string)
 	if err != nil {
-		http.Error(w, ErrConvStringMsg, http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("unable to convert string: %s", initial_string), http.StatusBadRequest)
 		logger.Lg.Printf("%v: %v\n", ErrConvStringMsg, err)
 		return
 	}
@@ -139,8 +139,8 @@ func PostUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set HTTP status to 201 (Created) to indicate successful file creation
-	w.WriteHeader(http.StatusCreated)
+	// Set HTTP status to 200 (OK) to match test expectations
+	w.WriteHeader(http.StatusOK)
 
 	// Return detailed information about the conversion
 	// This includes both the original input and the converted output
